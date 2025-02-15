@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden Planner App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="logo">
+            <img src="logo.png" alt="Gardening Logo">
+        </div>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Planner</a></li>
+            <li><a href="#">#</a></li>
+            <li><a href="#">#</a></li>
+        </ul>
+
+    </nav>
+
+    <div class="planner-container">
+       <!-- Left Sidebar -->
+<div class="sidebar">
+    <h3>Categories</h3>
+    <ul class="categories">
+        <!-- Plot -->
+        <li class="category-item" draggable="true">
+            <span class="category-title">Plot</span>
+            <ul class="subcategory">
+                <li data-type="plot" draggable="true">
+                    <img src="images/gardenbed.png" alt="Lawn" class="draggable-image" />
+                    
+                </li>
+                <li data-type="plot" draggable="true">
+                    <img src="images/path.png" alt="Path" class="draggable-image" />
+                    
+                </li>
+                <li data-type="plot" draggable="true">
+                    <img src="images/pond.png" alt="Pond" class="draggable-image" />
+                    
+                </li>
+            </ul>
+        </li>
+
+        <!-- Flowers and Trees -->
+        <li class="category-item" draggable="true">
+            <span class="category-title">Flowers and Trees</span>
+            <ul class="subcategory">
+                <li data-type="flower" draggable="true">
+                    <img src="images/rose.png" alt="Rose" class="draggable-image" />
+                    
+                </li>
+                <li data-type="tree" draggable="true">
+                    <img src="images/oak.png" alt="Oak" class="draggable-image" />
+                    
+                </li>
+                <li data-type="flower" draggable="true">
+                    <img src="images/sunflower.png" alt="Sunflower" class="draggable-image" />
+                    
+                </li>
+            </ul>
+        </li>
+
+        <!-- Vegetables -->
+        <li class="category-item" draggable="true">
+            <span class="category-title">Vegetables</span>
+            <ul class="subcategory">
+                <li data-type="vegetable" draggable="true">
+                    <img src="images/tomato.png" alt="Tomato" class="draggable-image" />
+                    
+                </li>
+                <li data-type="vegetable" draggable="true">
+                    <img src="images/carrot.png" alt="Carrot" class="draggable-image" />
+                    
+                </li>
+                <li data-type="vegetable" draggable="true">
+                    <img src="images/lettuce.png" alt="Lettuce" class="draggable-image" />
+                    
+                </li>
+            </ul>
+        </li>
+
+        <!-- Furniture -->
+        <li class="category-item" draggable="true">
+            <span class="category-title">Furniture</span>
+            <ul class="subcategory">
+                <li data-type="furniture" draggable="true">
+                    <img src="images/bench.png" alt="Bench" class="draggable-image" />
+                    
+                </li>
+                <li data-type="furniture" draggable="true">
+                    <img src="images/table.png" alt="Table" class="draggable-image" />
+                    
+                </li>
+                <li data-type="furniture" draggable="true">
+                    <img src="images/chair.png" alt="Chair" class="draggable-image" />
+                    
+                </li>
+            </ul>
+        </li>
+
+        <!-- Buildings -->
+        <li class="category-item" draggable="true">
+            <span class="category-title">Buildings</span>
+            <ul class="subcategory">
+                <li data-type="building" draggable="true">
+                    <img src="images/shed.png" alt="Shed" class="draggable-image" />
+                    
+                </li>
+                <li data-type="building" draggable="true">
+                    <img src="images/greenhouse.png" alt="Greenhouse" class="draggable-image" />
+                    
+                </li>
+                <li data-type="building" draggable="true">
+                    <img src="images/gazebo.png" alt="Gazebo" class="draggable-image" />
+                    
+                </li>
+            </ul>
+        </li>
+
+        <!-- Misc -->
+        <li class="category-item" draggable="true">
+            <span class="category-title">Misc</span>
+            <ul class="subcategory">
+                <li data-type="misc" draggable="true">
+                    <img src="images/rock.png" alt="Rock" class="draggable-image" />
+                    
+                </li>
+                <li data-type="misc" draggable="true">
+                    <img src="images/fountain.png" alt="Fountain" class="draggable-image" />
+                    
+                </li>
+                <li data-type="misc" draggable="true">
+                    <img src="images/statue.png" alt="Statue" class="draggable-image" />
+                    
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+    
+        <!-- Work Area -->
+        <div class="work-area" id="work-area">
+            <!-- Draggable items will be added here dynamically -->
+        </div>
+    </div>
+
+
+<!-- Toolbar Buttons -->
+<div class="toolbar" id="toolbar">
+    <button id="start-new">Start New</button>
+    <button id="undo">Undo</button>
+    <button id="save">Save</button>
+    <button id="draw-lawn">Draw Lawn</button>
+    <button id="draw-path">Draw Path</button>
+</div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Gardening Website. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
