@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gardening Website</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11/dist/interact.min.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <img src="logo.png" alt="Gardening Logo">
+        </div>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="beds.html">Bed Planner</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact us</a></li>
+        </ul>
+    </nav>
+
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        nav {
+            background: #3a5a40;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo img { height: 40px; }
+        .menu { list-style: none; display: flex; gap: 20px; margin: 0; padding: 0; }
+        .menu a { color: white; text-decoration: none; }
+        
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+        .left-menu {
+            width: 250px;
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .work-area {
+            flex: 1;
+            min-height: 70vh;
+            background: #eee;
+            padding: 20px;
+            border-radius: 8px;
+            position: relative;
+            overflow: auto;
+        }
+        .garden-bed {
+            background: #e8f5e9;
+            border: 5px solid #4c2500;
+            border-radius: 8px;
+            padding: 10px;
+            position: absolute;
+            box-sizing: border-box;
+            cursor: move;
+            overflow: hidden;
+            min-width: 300px;
+        }
+        .bed-header input { 
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-weight: bold;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .bed-grid {
+            display: grid;
+            gap: 8px;
+            width: 100%;
+            height: calc(100% - 40px);
+        }
+        .bed-cell input {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 8px;
+            box-sizing: border-box;
+            background: white;
+            font-size: 14px;
+        }
+        .controls {
+            text-align: center;
+            padding: 20px;
+        }
+        .controls button {
+            margin: 0 10px;
+            padding: 8px 16px;
+            background: #57c35b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Advert space styling */
+        .advert-space {
+            width: 100%;
+            height: 250px;
+            background: #f0f0f0;
+            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
+            border: 1px dashed #ccc;
+        }
+
+        .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; /* Hidden initially */
+}
+
+.popup-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    display: none; /* Hidden initially */
+}
+        
+        .popup-form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        .popup-form input,
+        .popup-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+
+    <div class="container">
+        <div class="left-menu">
+            <h3>Garden Beds</h3>
+            <div class="add-bed-form">
+                <input type="text" id="bed-name" placeholder="Bed Name">
+                <p>Rows</p>
+                <input type="number" id="bed-rows" placeholder="Rows" min="1" value="4">
+                <p>Columns</p>
+                <input type="number" id="bed-cols" placeholder="Columns" min="1" value="4">
+                <button onclick="addGardenBed()">Add Garden Bed</button>
+            </div>
+        </div>
+        <div class="work-area" id="workArea"></div>
+    </div>
+
+    <div class="controls">
+        <button onclick="saveGarden()">Save</button>
+        <button onclick="newGarden()">New</button>
+    </div>
+
+    <div class="advert-space">
+        <!-- Space for Google Ads or other advertisements -->
+        <p>Advert space</p>
+    </div>
+    <br>
+    <br>
+    <div class="popup-overlay" id="popupOverlay" onclick="closeForm()"></div>
+    <div class="popup-form" id="popupForm">
+        <label>Type: <input type="text" id="cell-type"></label>
+        <label>Variety: <input type="text" id="cell-variety"></label>
+        <label>Date Planted: <input type="date" id="cell-date"></label>
+        <label>Notes: <textarea id="cell-notes"></textarea></label>
+        <button onclick="saveCellData()">Save</button>
+        <button onclick="closeForm()">Cancel</button>
+    </div>
+
+    <script>
+        let gardenBeds = [];
+        let selectedCell = null;
+        let selectedBedIndex = null;
+        let selectedCellIndex = null;
+
+        // Function to add a new garden bed
+        function addGardenBed() {
+            const bedName = document.getElementById('bed-name').value;
+            const rows = parseInt(document.getElementById('bed-rows').value);
+            const cols = parseInt(document.getElementById('bed-cols').value);
+
+            if (!bedName) {
+                alert('Please enter a bed name.');
+                return;
+            }
+
+            const gardenBed = {
+                name: bedName,
+                rows: rows,
+                cols: cols,
+                x: 20,
+                y: 20,
+                cells: Array.from({ length: rows * cols }).map(() => ({ type: '', variety: '', date: '', notes: '' }))
+            };
+
+            gardenBeds.push(gardenBed);
+            renderGardenBeds();
+        }
+
+       // Function to render garden beds
+function renderGardenBeds() {
+    const workArea = document.getElementById('workArea');
+    workArea.innerHTML = ''; // Clear the current layout
+
+    gardenBeds.forEach((gardenBed, bedIndex) => {
+        const bedDiv = document.createElement('div');
+        bedDiv.classList.add('garden-bed');
+        bedDiv.style.top = gardenBed.y + 'px';
+        bedDiv.style.left = gardenBed.x + 'px';
+
+        const bedHeader = document.createElement('div');
+        bedHeader.classList.add('bed-header');
+        const bedTitleInput = document.createElement('input');
+        bedTitleInput.value = gardenBed.name;
+        bedTitleInput.addEventListener('input', () => {
+            gardenBed.name = bedTitleInput.value;
+        });
+        bedHeader.appendChild(bedTitleInput);
+        bedDiv.appendChild(bedHeader);
+
+        const bedGrid = document.createElement('div');
+        bedGrid.classList.add('bed-grid');
+        bedGrid.style.gridTemplateRows = `repeat(${gardenBed.rows}, 1fr)`;
+        bedGrid.style.gridTemplateColumns = `repeat(${gardenBed.cols}, 1fr)`;
+
+        gardenBed.cells.forEach((cell, cellIndex) => {
+            const cellDiv = document.createElement('div');
+            const cellInput = document.createElement('input');
+            cellInput.value = cell.type || 'Click to Edit';
+            cellInput.placeholder = 'Click to Edit';
+            cellInput.addEventListener('click', () => openCellForm(bedIndex, cellIndex)); // Open cell form on click
+            cellDiv.classList.add('bed-cell');
+            cellDiv.appendChild(cellInput);
+            bedGrid.appendChild(cellDiv);
+        });
+
+        bedDiv.appendChild(bedGrid);
+
+        // Add Delete button under the grid
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete Bed';
+        deleteButton.style.marginTop = '10px';
+        deleteButton.style.background = '#f44336'; // Red background for delete button
+        deleteButton.style.color = 'white';
+        deleteButton.style.border = 'none';
+        deleteButton.style.padding = '8px 16px';
+        deleteButton.style.cursor = 'pointer';
+        deleteButton.addEventListener('click', () => deleteGardenBed(bedIndex)); // Call delete function
+
+        bedDiv.appendChild(deleteButton);
+
+        // Enable dragging
+        interact(bedDiv).draggable({
+            onmove(event) {
+                bedDiv.style.top = (parseFloat(bedDiv.style.top) + event.dy) + 'px';
+                bedDiv.style.left = (parseFloat(bedDiv.style.left) + event.dx) + 'px';
+                gardenBed.x = parseFloat(bedDiv.style.left);
+                gardenBed.y = parseFloat(bedDiv.style.top);
+            }
+        });
+
+        workArea.appendChild(bedDiv);
+    });
+}
+
+
+        // Function to save the garden layout to localStorage
+        function saveGarden() {
+            if (confirm('Are you sure you want to save the garden layout?')) {
+                localStorage.setItem('gardenBeds', JSON.stringify(gardenBeds));
+                alert('Garden saved successfully!');
+            }
+        }
+
+        // Load garden data from localStorage after refresh
+        window.onload = function() {
+            const savedData = localStorage.getItem('gardenBeds');
+            if (savedData) {
+                gardenBeds = JSON.parse(savedData);
+                renderGardenBeds();
+            }
+        };
+
+        // Reset the garden to its initial state
+        function newGarden() {
+            if (confirm('Are you sure you want to reset the garden? This will delete all unsaved progress.')) {
+                localStorage.removeItem('gardenBeds');
+                gardenBeds = [];
+                renderGardenBeds();
+            }
+        }
+
+       // Function to open the cell form
+function openCellForm(bedIndex, cellIndex) {
+    selectedBedIndex = bedIndex;
+    selectedCellIndex = cellIndex;
+
+    const cellData = gardenBeds[bedIndex].cells[cellIndex];
+
+    // Populate form fields with existing data
+    document.getElementById('cell-type').value = cellData.type || '';
+    document.getElementById('cell-variety').value = cellData.variety || '';
+    document.getElementById('cell-date').value = cellData.date || '';
+    document.getElementById('cell-notes').value = cellData.notes || '';
+
+    // Show the form
+    document.getElementById('popupOverlay').style.display = 'block';
+    document.getElementById('popupForm').style.display = 'block';
+}
+
+
+        // Function to save the cell data
+        function saveCellData() {
+            const cellData = gardenBeds[selectedBedIndex].cells[selectedCellIndex];
+
+            // Save the data to the cell
+            cellData.type = document.getElementById('cell-type').value;
+            cellData.variety = document.getElementById('cell-variety').value;
+            cellData.date = document.getElementById('cell-date').value;
+            cellData.notes = document.getElementById('cell-notes').value;
+
+            // Close the form
+            closeForm();
+            renderGardenBeds(); // Re-render beds to show updated data
+        }
+
+      // Function to close the cell form
+function closeForm() {
+    document.getElementById('popupOverlay').style.display = 'none';
+    document.getElementById('popupForm').style.display = 'none';
+}
+
+// Function to delete a garden bed
+function deleteGardenBed(bedIndex) {
+    const confirmDelete = confirm('Are you sure you want to delete this garden bed?');
+    if (confirmDelete) {
+        gardenBeds.splice(bedIndex, 1); // Remove the bed from the array
+        renderGardenBeds(); // Re-render the garden beds after deletion
+    }
+}
+
+    </script>
+<!-- Footer -->
+<footer>
+    <p>&copy; 2025 Gardening Website. All rights reserved.</p>
+    <p><strong>Disclaimer:</strong> As an Amazon Associate, we earn from qualifying purchases.</p>
+   </footer>
+   </body>
+   </html>
